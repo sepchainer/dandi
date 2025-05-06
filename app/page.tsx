@@ -1,17 +1,62 @@
+'use client';
+
 import Image from "next/image";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 export default function Home() {
+  const { data: session } = useSession();
+
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
+        <div className="flex items-center justify-between w-full">
+          <Image
+            className="dark:invert"
+            src="/next.svg"
+            alt="Next.js logo"
+            width={180}
+            height={38}
+            priority
+          />
+          {session ? (
+            <div className="flex items-center gap-4">
+              {session.user?.image && (
+                <Image
+                  src={session.user.image}
+                  alt={session.user.name || 'Profile picture'}
+                  width={40}
+                  height={40}
+                  className="rounded-full"
+                />
+              )}
+              <div className="flex flex-col">
+                <p className="text-sm font-medium">{session.user?.name}</p>
+                <p className="text-xs text-gray-500">{session.user?.email}</p>
+              </div>
+              <button
+                onClick={() => signOut()}
+                className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-red-600 text-white gap-2 hover:bg-red-700 font-medium text-sm px-4 py-2"
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => signIn('google')}
+              className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-blue-600 text-white gap-2 hover:bg-blue-700 font-medium text-sm px-4 py-2"
+            >
+              <Image
+                src="/google.svg"
+                alt="Google logo"
+                width={20}
+                height={20}
+                className="mr-2"
+              />
+              Sign in with Google
+            </button>
+          )}
+        </div>
+        
         <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
           <li className="mb-2 tracking-[-.01em]">
             Get started by editing{" "}
